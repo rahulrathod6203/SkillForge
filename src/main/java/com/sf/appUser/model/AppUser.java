@@ -25,15 +25,16 @@ public class AppUser {
     @NotBlank(message = "Name cannot be blank!")
     private String fullName;
 
+    @Column(name = "user_email" , nullable = false , unique = true)
+    @NotBlank(message = "Email cannot be blank!")
+    @Email(message = "Enter a valid email!")
+    private String email;
+
     @Column(name = "password" , nullable = false)
     @NotBlank(message = "Password cannot be blank!")
     @Size(min = 8, message = "Password should have minimum 8 characters!")
     private String password;
 
-    @Column(name = "user_email" , nullable = false , unique = true)
-    @NotBlank(message = "Email cannot be blank!")
-    @Email(message = "Enter a valid email!")
-    private String email;
 
     @Column(name = "user_phone" , nullable = false , unique = true)
     @NotBlank(message = "Phone cannot be blank!")
