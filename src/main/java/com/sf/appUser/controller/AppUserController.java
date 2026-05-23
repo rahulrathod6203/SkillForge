@@ -48,13 +48,13 @@ public class AppUserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AppUserResponse> updateUser(@PathVariable Long id, @RequestBody AppUserRequest request) {
-        log.info("Updating existing single user by id...");
+        log.info("Updating existing user by id...");
         return ResponseEntity.accepted().body(appUserService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
-        log.info("Deleting existing single user by id...");
+        log.info("Deleting existing user by id...");
         String deletedMessage = appUserService.deleteUserById(id);
         return ResponseEntity.ok().body(deletedMessage);
     }
