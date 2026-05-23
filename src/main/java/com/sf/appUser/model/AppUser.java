@@ -1,11 +1,10 @@
-package com.sf.appUser.entity;
+package com.sf.appUser.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
