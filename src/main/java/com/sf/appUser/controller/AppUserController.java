@@ -1,40 +1,43 @@
-package com.sf.appUser.service;
+package com.sf.appUser.controller;
 
 import com.sf.appUser.dto.AppUserRequest;
 import com.sf.appUser.dto.AppUserResponse;
-import com.sf.appUser.repository.AppUserRepository;
+import com.sf.appUser.service.AppUserService;
+import jakarta.persistence.PostUpdate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Service
+@RestController
+@RequestMapping("api/v1/appUsers")
 @RequiredArgsConstructor
-public class AppUserServiceImpl implements AppUserService{
+public class AppUserController {
 
-    private  final AppUserRepository userRepository;
+    private final AppUserService appUserService;
 
-    @Override
+    @PostMapping
     public AppUserResponse createUser(AppUserRequest request) {
         return null;
     }
 
-    @Override
+    @GetMapping
     public List<AppUserResponse> getAllUsers() {
         return List.of();
     }
 
-    @Override
+
+    @GetMapping("/{id}")
     public AppUserResponse getUserById(Long id) {
         return null;
     }
 
-    @Override
+    @PutMapping("/{id}")
     public AppUserResponse updateUser(Long id, AppUserRequest request) {
         return null;
     }
 
-    @Override
+    @DeleteMapping("/{id}")
     public void deleteUserById(Long id) {
 
     }
