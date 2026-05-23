@@ -15,5 +15,5 @@ public interface AppUserService {
 
     AppUserResponse updateUser(Long id, AppUserRequest request);
 
-    void deleteUserById(Long id);
+    String deleteUserById(Long id);
 }

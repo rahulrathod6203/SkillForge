@@ -2,27 +2,33 @@ package com.sf.appUser.service;
 
 import com.sf.appUser.dto.AppUserRequest;
 import com.sf.appUser.dto.AppUserResponse;
+import com.sf.appUser.exception.EmailAlreadyExistsException;
+import com.sf.appUser.exception.UserNotFoundException;
 import com.sf.appUser.mapper.AppUserMapper;
 import com.sf.appUser.model.AppUser;
 import com.sf.appUser.repository.AppUserRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository userRepository;
-
     private final AppUserMapper mapper;
 
+    @Transactional
     @Override
     public AppUserResponse createUser(AppUserRequest request) {
 
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already exists!");
+            throw new EmailAlreadyExistsException("Email already exists!");
         }
 
         AppUser user = mapper.toEntity(request);
@@ -34,9 +40,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public List<AppUserResponse> getAllUsers() {
         List<AppUser> allAppUsers = userRepository.findAll();
-        if (allAppUsers.isEmpty()) {
-            throw new RuntimeException("No users registered yet!");
-        }
+
         return allAppUsers.stream().map(mapper::toResponse).toList();
     }
 
@@ -44,31 +48,31 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUserResponse getUserById(Long id) {
         return userRepository.findById(id)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new RuntimeException("User with the given ID : " + id + " not found!"));
+                .orElseThrow(() -> new UserNotFoundException("User with the given ID : " + id + " not found!"));
     }
 
+    @Transactional
     @Override
     public AppUserResponse updateUser(Long id, AppUserRequest request) {
-        return userRepository.findById(id)
-                .map(user -> {
+        return userRepository.findById(id).map(user -> {
 
-                    AppUser.builder()
-                            .fullName(request.fullName())
-                            .email(request.email())
-                            .password(request.password())
-                            .phone(request.phone())
-                            .address(request.address())
-                            .build();
+            user.setFullName(request.fullName());
+            user.setEmail(request.email());
+            user.setPassword(request.password());
+            user.setPhone(request.phone());
+            user.setAddress(request.address());
 
-                    return mapper.toResponse(user);
-                }).orElseThrow(() -> new RuntimeException("User with the given ID : " + id + " not found!"));
+            return mapper.toResponse(user);
+        }).orElseThrow(() -> new UserNotFoundException("User with the given ID : " + id + " not found!"));
     }
 
+    @Transactional
     @Override
-    public void deleteUserById(Long id) {
+    public String deleteUserById(Long id) {
         userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User with the given ID : " + id + " not found!"));
+                .orElseThrow(() -> new UserNotFoundException("User with the given ID : " + id + " not found!"));
 
         userRepository.deleteById(id);
+        return "User with the given ID successfully deleted!";
     }
 }

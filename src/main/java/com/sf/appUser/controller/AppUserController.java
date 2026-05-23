@@ -3,6 +3,7 @@ package com.sf.appUser.controller;
 import com.sf.appUser.dto.AppUserRequest;
 import com.sf.appUser.dto.AppUserResponse;
 import com.sf.appUser.service.AppUserService;
+import jakarta.persistence.PostUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,21 +41,21 @@ public class AppUserController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppUserResponse> getUserById(Long id) {
+    public ResponseEntity<AppUserResponse> getUserById(@PathVariable Long id) {
         log.info("Fetching single user by id...");
         return ResponseEntity.ok(appUserService.getUserById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AppUserResponse> updateUser(Long id, AppUserRequest request) {
+    public ResponseEntity<AppUserResponse> updateUser(@PathVariable Long id, @RequestBody AppUserRequest request) {
         log.info("Updating existing single user by id...");
         return ResponseEntity.accepted().body(appUserService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUserById(Long id) {
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         log.info("Deleting existing single user by id...");
-        appUserService.deleteUserById(id);
-        return ResponseEntity.noContent().build();
+        String deletedMessage = appUserService.deleteUserById(id);
+        return ResponseEntity.ok().body(deletedMessage);
     }
 }
