@@ -16,6 +16,13 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public AppUserResponse createUser(AppUserRequest request) {
+
+        if(userRepository.existsByEmail(request.email())){
+            throw new RuntimeException("Email already exists!");
+        }
+
+
+
         return null;
     }
 
