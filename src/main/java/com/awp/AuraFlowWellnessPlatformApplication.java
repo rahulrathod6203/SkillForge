@@ -5,12 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-//@ComponentScan(
-//        excludeFilters = @ComponentScan.Filter(
-//                type = FilterType.ASPECTJ,
-//                pattern = "com.sf.appUser..*"
-//        )
-//)
 public class AuraFlowWellnessPlatformApplication {
 
     public static void main(String[] args) {
