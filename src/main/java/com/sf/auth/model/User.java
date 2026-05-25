@@ -63,7 +63,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    @Column(name = "role", nullable = false)
+//    @Column(name = "role", nullable = false)
     private Set<Role> roles;
 
     @PrePersist

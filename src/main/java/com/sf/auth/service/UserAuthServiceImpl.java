@@ -65,7 +65,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         user.setPassword(passwordEncoder.encode(registerDTO.password()));
 
         Set<Role> roles = new HashSet<>();
-        Role defaultRole = roleRepository.findByName("USER")
+        Role defaultRole = roleRepository.findByName("ADMIN")
                 .orElseThrow(() -> {
                     log.error("CRITICAL CONFIGURATION ERROR: 'USER' baseline row missing inside the roles master table.");
                     return new RuntimeException("System Error: Default role 'USER' does not exist in database!");
