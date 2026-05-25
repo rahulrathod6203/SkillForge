@@ -1,7 +1,6 @@
 package com.sf.auth.model;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,11 +10,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Slf4j
 @AllArgsConstructor
 public class UserPrincipal implements UserDetails {
 
     private User user;
+
+    public Long getId() {
+        return user.getId();
+    }
 
     @NotNull
     @Override

@@ -1,11 +1,12 @@
 package com.sf.user.service;
 
 import com.sf.auth.exception.EmailAlreadyExistsException;
+import com.sf.auth.exception.PhoneAlreadyExistsException;
 import com.sf.auth.model.User;
 import com.sf.auth.repository.UserRepository;
 import com.sf.user.dto.UserRequestDTO;
 import com.sf.user.dto.UserResponseDTO;
-import com.sf.user.exception.UserNotFoundException;
+import com.sf.auth.exception.UserNotFoundException;
 import com.sf.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,12 @@ public class UserServiceImpl implements UserService {
                 log.warn("Update rejected: Email {} is already claimed by another account.", request.email());
                 throw new EmailAlreadyExistsException("This email is already claimed by another account!");
             }
+
+            if (!user.getPhone().equalsIgnoreCase(request.phone()) && userRepository.existsByPhone(request.phone())) {
+                log.warn("Update rejected: Phone number {} is already claimed by another account.", request.phone());
+                throw new PhoneAlreadyExistsException("This phone number is already claimed by another account!");
+            }
+
             user.setName(request.name());
             user.setEmail(request.email());
             user.setPhone(request.phone());

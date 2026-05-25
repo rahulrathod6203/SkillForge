@@ -1,9 +1,9 @@
 package com.sf.auth.service;
 
+import com.sf.auth.exception.UserNotFoundException;
 import com.sf.auth.model.User;
 import com.sf.auth.model.UserPrincipal;
 import com.sf.auth.repository.UserRepository;
-import com.sf.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

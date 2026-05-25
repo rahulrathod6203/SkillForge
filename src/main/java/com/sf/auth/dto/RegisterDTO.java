@@ -10,7 +10,7 @@ public record RegisterDTO(
 
         @NotBlank(message = "Name cannot be blank!")
         @Size(min = 3, message = "Name should have minimum 3 characters!")
-        String fullName,
+        String name,
 
         @NotBlank(message = "Email cannot be blank!")
         @Email(message = "Enter a valid email!")

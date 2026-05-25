@@ -4,7 +4,7 @@ import com.sf.auth.exception.EmailAlreadyExistsException;
 import com.sf.auth.dto.LoginDTO;
 import com.sf.auth.dto.RegisterDTO;
 import com.sf.auth.exception.PhoneAlreadyExistsException;
-import com.sf.auth.mapper.UserMapper;
+import com.sf.auth.mapper.AuthUserMapper;
 import com.sf.auth.model.Role;
 import com.sf.auth.model.User;
 import com.sf.auth.repository.RoleRepository;
@@ -29,7 +29,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final UserMapper mapper;
+    private final AuthUserMapper mapper;
     private final RoleRepository roleRepository;
 
     @Override
