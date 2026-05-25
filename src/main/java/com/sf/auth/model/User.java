@@ -1,12 +1,16 @@
-package com.sf.appUser.model;
+package com.sf.auth.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "app_users")
@@ -15,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppUser {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +27,7 @@ public class AppUser {
 
     @Column(name = "full_name" , nullable = false)
     @NotBlank(message = "Name cannot be blank!")
-    private String fullName;
+    private String name;
 
     @Column(name = "user_email" , nullable = false , unique = true)
     @NotBlank(message = "Email cannot be blank!")
@@ -35,7 +39,6 @@ public class AppUser {
     @Size(min = 8, message = "Password should have minimum 8 characters!")
     private String password;
 
-
     @Column(name = "user_phone" , nullable = false , unique = true)
     @NotBlank(message = "Phone cannot be blank!")
     @Size(min = 10, message = "Enter a valid phone number!")
@@ -46,23 +49,32 @@ public class AppUser {
     private String address;
 
     @Column(name = "user_created_At" , nullable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "user_updated_At" , nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Column(name = "user_active_status" , nullable = false)
     private Boolean active;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    @Column(name = "role", nullable = false)
+    private Set<Role> roles;
+
     @PrePersist
     public void onCreate(){
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 
-    @PostUpdate
+    @PreUpdate
     public void onUpdate(){
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = Instant.now();
     }
 
 }

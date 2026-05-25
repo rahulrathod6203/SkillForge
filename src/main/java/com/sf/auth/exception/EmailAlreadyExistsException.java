@@ -1,4 +1,4 @@
-package com.sf.appUser.exception;
+package com.sf.auth.exception;
 
 public class EmailAlreadyExistsException extends RuntimeException{
     public EmailAlreadyExistsException(String message) {

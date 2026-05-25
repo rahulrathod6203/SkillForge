@@ -1,12 +1,10 @@
-package com.sf.appUser.exception;
+package com.sf.auth.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter

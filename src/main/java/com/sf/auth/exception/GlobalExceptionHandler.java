@@ -1,4 +1,4 @@
-package com.sf.appUser.exception;
+package com.sf.auth.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,19 +19,38 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception exception, WebRequest request) {
-        log.error("An unexpected error occurred: ", exception);
+        log.error("CRITICAL ERROR: An unexpected system failure occurred at path {}: ",
+                request.getDescription(false).replace("uri=", ""), exception);
         return buildResponse(request, "An internal server error occurred. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleUBadCredentialsException(BadCredentialsException exception, WebRequest request) {
+        log.warn("Authentication rejected: Bad credentials provided.");
+        return buildResponse(request, "Invalid email or password structure.", HttpStatus.UNAUTHORIZED, null);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception, WebRequest request) {
-        log.warn("User not found exception: {}", exception.getMessage());
+        log.warn("Resource access warning: User lookup failed at path {}. Error: {}",
+                request.getDescription(false).replace("uri=", ""), exception.getMessage());
+
         return buildResponse(request, exception.getMessage(), HttpStatus.NOT_FOUND, null);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Object> handleEmailAlreadyExistsException(EmailAlreadyExistsException exception, WebRequest request) {
-        log.warn("Email conflict exception: {}", exception.getMessage());
+        log.warn("Data conflict encountered: Email already registered at path {}. Details: {}",
+                request.getDescription(false).replace("uri=", ""), exception.getMessage());
+
+        return buildResponse(request, exception.getMessage(), HttpStatus.BAD_REQUEST, null);
+    }
+
+    @ExceptionHandler(PhoneAlreadyExistsException.class)
+    public ResponseEntity<Object> handlePhoneAlreadyExistsException(PhoneAlreadyExistsException exception, WebRequest request) {
+        log.warn("Data conflict encountered: Phone number already registered at path {}. Details: {}",
+                request.getDescription(false).replace("uri=", ""), exception.getMessage());
+
         return buildResponse(request, exception.getMessage(), HttpStatus.BAD_REQUEST, null);
     }
 
@@ -44,12 +62,15 @@ public class GlobalExceptionHandler {
             String defaultMessage = error.getDefaultMessage();
             errors.put(fieldName, defaultMessage);
         });
-        log.warn("Validation failed for request path {}: {}", request.getDescription(false), errors);
+
+        // 🟡 Form/DTO request constraint violations logged cleanly alongside mapped field errors
+        log.warn("Validation constraint failure for request path {}: Field ErrorsMap -> {}",
+                request.getDescription(false).replace("uri=", ""), errors);
+
         return buildResponse(request, "Validation failed!", HttpStatus.BAD_REQUEST, errors);
     }
 
     public ResponseEntity<Object> buildResponse(WebRequest request, String message, HttpStatus status, Map<String, String> errors) {
-
         String trimmedPath = request.getDescription(false).replace("uri=", "");
 
         ErrorDetails.ErrorDetailsBuilder builder = ErrorDetails.builder();
@@ -65,7 +86,5 @@ public class GlobalExceptionHandler {
                 .path(trimmedPath);
 
         return ResponseEntity.status(status).body(builder.build());
-
     }
-
 }

@@ -1,4 +1,4 @@
-package com.sf.appUser.dto;
+package com.sf.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,9 +6,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record AppUserRequest(
+public record RegisterDTO(
 
         @NotBlank(message = "Name cannot be blank!")
+        @Size(min = 3, message = "Name should have minimum 3 characters!")
         String fullName,
 
         @NotBlank(message = "Email cannot be blank!")
