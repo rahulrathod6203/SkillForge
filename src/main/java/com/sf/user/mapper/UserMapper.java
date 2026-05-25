@@ -1,29 +1,29 @@
-package com.sf.appUser.mapper;
+package com.sf.user.mapper;
 
-import com.sf.appUser.dto.AppUserRequest;
-import com.sf.appUser.dto.AppUserResponse;
-import com.sf.appUser.model.AppUser;
+import com.sf.user.dto.UserRequestDTO;
+import com.sf.user.dto.UserResponseDTO;
+import com.sf.auth.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
-public interface AppUserMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "active", ignore = true)
-    AppUser toEntity(AppUserRequest request);
+    User toEntity(UserRequestDTO request);
 
-    AppUserResponse toResponse(AppUser appUser);
+    UserResponseDTO toResponse(User appUser);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "fullName", ignore = true)
+    @Mapping(target = "name", ignore = true)
     @Mapping(target = "email", ignore = true)
-    void updateAppUser(AppUserRequest request, @MappingTarget AppUser appUser);
+    void updateAppUser(UserRequestDTO request, @MappingTarget User appUser);
 
 }

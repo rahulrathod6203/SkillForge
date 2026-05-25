@@ -1,6 +1,12 @@
 spring:
   application:
     name: SkillForge
+  main:
+    banner-mode: off
+  sql:
+    init:
+      mode: always
+
 
   # Database configuration (Brought out of application nesting)
   datasource:
