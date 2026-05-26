@@ -1,12 +1,11 @@
 package com.awp.user.service;
 
-import com.awp.auth.exception.EmailAlreadyExistsException;
-import com.awp.auth.exception.PhoneAlreadyExistsException;
+import com.awp.auth.exception.userDomain.PhoneAlreadyExistsException;
+import com.awp.auth.exception.userDomain.UserNotFoundException;
 import com.awp.auth.model.User;
 import com.awp.auth.repository.UserRepository;
 import com.awp.user.dto.UserRequestDTO;
 import com.awp.user.dto.UserResponseDTO;
-import com.awp.auth.exception.UserNotFoundException;
 import com.awp.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,12 +56,12 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findById(id).map(user -> {
 
-            // 1. UNIQUE EMAIL CHECK: If they are trying to shift to a new email address,
-            // ensure no other record in the database is already using it.
+            /*
             if (!user.getEmail().equalsIgnoreCase(request.email()) && userRepository.existsByEmail(request.email())) {
                 log.warn("Update aborted: Email {} is already assigned to a different account.", request.email());
                 throw new EmailAlreadyExistsException("This email is already claimed by another account!");
             }
+            */
 
             // 2. UNIQUE PHONE CHECK
             if (!user.getPhone().equalsIgnoreCase(request.phone()) && userRepository.existsByPhone(request.phone())) {
@@ -70,13 +69,15 @@ public class UserServiceImpl implements UserService {
                 throw new PhoneAlreadyExistsException("This phone number is already claimed by another account!");
             }
             user.setName(request.name());
-            user.setEmail(request.email());
+//          user.setEmail(request.email());
             user.setPhone(request.phone());
             user.setAddress(request.address());
 
+            /*
             if (request.password() != null && !request.password().isBlank()) {
                 user.setPassword(passwordEncoder.encode(request.password()));
             }
+            */
 
             User updatedUser = userRepository.save(user);
             log.info("Database state successfully synchronized for User ID: {}", id);
