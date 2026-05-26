@@ -1,9 +1,10 @@
 package com.awp.auth.service;
 
-import com.awp.auth.exception.EmailAlreadyExistsException;
 import com.awp.auth.dto.LoginDTO;
 import com.awp.auth.dto.RegisterDTO;
+import com.awp.auth.exception.EmailAlreadyExistsException;
 import com.awp.auth.exception.PhoneAlreadyExistsException;
+import com.awp.auth.jwt.JWTTokenProvider;
 import com.awp.auth.mapper.AuthUserMapper;
 import com.awp.auth.model.Role;
 import com.awp.auth.model.User;
@@ -31,6 +32,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final UserRepository userRepository;
     private final AuthUserMapper mapper;
     private final RoleRepository roleRepository;
+    private final JWTTokenProvider jwtTokenProvider;
 
     @Override
     public String login(LoginDTO loginDTO) {
@@ -42,6 +44,9 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("Authentication manager verification successful. SecurityContext updated for email: {}", loginDTO.email());
+
+
+       // return jwtTokenProvider.generateToken(authentication);
 
         return "Logged-in Successfully";
     }

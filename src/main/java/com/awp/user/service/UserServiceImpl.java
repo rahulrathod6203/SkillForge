@@ -53,18 +53,22 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserResponseDTO updateUser(Long id, UserRequestDTO request) {
-        log.info("Processing profile update request for User ID: {}", id);
+        log.info("Processing secure profile update transaction for User ID: {}", id);
+
         return userRepository.findById(id).map(user -> {
+
+            // 1. UNIQUE EMAIL CHECK: If they are trying to shift to a new email address,
+            // ensure no other record in the database is already using it.
             if (!user.getEmail().equalsIgnoreCase(request.email()) && userRepository.existsByEmail(request.email())) {
-                log.warn("Update rejected: Email {} is already claimed by another account.", request.email());
+                log.warn("Update aborted: Email {} is already assigned to a different account.", request.email());
                 throw new EmailAlreadyExistsException("This email is already claimed by another account!");
             }
 
+            // 2. UNIQUE PHONE CHECK
             if (!user.getPhone().equalsIgnoreCase(request.phone()) && userRepository.existsByPhone(request.phone())) {
-                log.warn("Update rejected: Phone number {} is already claimed by another account.", request.phone());
+                log.warn("Update aborted: Phone number {} is already assigned to a different account.", request.phone());
                 throw new PhoneAlreadyExistsException("This phone number is already claimed by another account!");
             }
-
             user.setName(request.name());
             user.setEmail(request.email());
             user.setPhone(request.phone());
@@ -73,12 +77,14 @@ public class UserServiceImpl implements UserService {
             if (request.password() != null && !request.password().isBlank()) {
                 user.setPassword(passwordEncoder.encode(request.password()));
             }
+
             User updatedUser = userRepository.save(user);
-            log.info("Profile fields successfully modified and persisted for User ID: {}", id);
+            log.info("Database state successfully synchronized for User ID: {}", id);
             return mapper.toResponse(updatedUser);
+
         }).orElseThrow(() -> {
-            log.warn("Update failed: User with the given ID : {} not found!", id);
-            return new UserNotFoundException("User with the given ID : " + id + " not found!");
+            log.warn("Update operation failed: Identity record target ID {} does not exist.", id);
+            return new UserNotFoundException("User with the given ID: " + id + " not found!");
         });
     }
 
