@@ -1,4 +1,4 @@
-package com.awp.auth.exception;
+package com.awp.auth.exception.responseBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

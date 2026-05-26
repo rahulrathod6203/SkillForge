@@ -7,10 +7,12 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 public class JWTTokenProvider {
@@ -27,8 +29,14 @@ public class JWTTokenProvider {
         String username = authentication.getName();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + JWT_EXPIRE_TIME);
+
+        String roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
         return Jwts.builder()
                 .subject(username)
+                .claim("roles", roles)
                 .issuedAt(currentDate)
                 .expiration(expireDate)
                 .signWith(key())
@@ -41,7 +49,7 @@ public class JWTTokenProvider {
     }
 
     // Get Username from JWT Token
-    public String getUsername(String token){
+    public String getUsername(String token) {
         return Jwts.parser()
                 .verifyWith(key())
                 .build()
@@ -50,21 +58,26 @@ public class JWTTokenProvider {
                 .getSubject();
     }
 
-    // Validate JWT Token
-    public Boolean validateToken(String token){
+    // Validate JWT Token Layout
+    public Boolean validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(key())
                     .build()
-                    .parse(token);
+                    .parseSignedClaims(token);
             return true;
 
-        }catch (MalformedJwtException exception){
+        } catch (MalformedJwtException exception) {
             throw new RuntimeException("Invalid JWT Token");
 
-        }catch (ExpiredJwtException exception){
+        } catch (ExpiredJwtException exception) {
             throw new RuntimeException("JWT Token expired");
 
+        } catch (IllegalArgumentException exception) {
+            throw new RuntimeException("JWT claims string is empty.");
+
+        } catch (Exception exception) {
+            throw new RuntimeException("JWT signature validation failed.");
         }
     }
 

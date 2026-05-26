@@ -4,8 +4,8 @@ import com.awp.auth.dto.AuthResponse;
 import com.awp.auth.dto.LoginDTO;
 import com.awp.auth.dto.RegisterDTO;
 import com.awp.auth.dto.UserSummaryDTO;
-import com.awp.auth.exception.EmailAlreadyExistsException;
-import com.awp.auth.exception.PhoneAlreadyExistsException;
+import com.awp.auth.exception.userDomain.EmailAlreadyExistsException;
+import com.awp.auth.exception.userDomain.PhoneAlreadyExistsException;
 import com.awp.auth.jwt.JWTTokenProvider;
 import com.awp.auth.mapper.AuthUserMapper;
 import com.awp.auth.model.Role;
@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,7 +95,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         user.setPassword(passwordEncoder.encode(registerDTO.password()));
 
         Set<Role> roles = new HashSet<>();
-        Role defaultRole = roleRepository.findByName("ADMIN")
+        Role defaultRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> {
                     log.error("CRITICAL CONFIGURATION ERROR: 'USER' baseline row missing inside the roles master table.");
                     return new RuntimeException("System Error: Default role 'USER' does not exist in database!");

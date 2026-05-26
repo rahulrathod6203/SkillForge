@@ -11,6 +11,7 @@ public record UserRequestDTO(
         @NotBlank(message = "Name cannot be blank!")
         String name,
 
+        /*
         @NotBlank(message = "Email cannot be blank!")
         @Email(message = "Enter a valid email!")
         String email,
@@ -18,6 +19,7 @@ public record UserRequestDTO(
         @NotBlank(message = "Password cannot be blank!")
         @Size(min = 8, message = "Password should have minimum 8 characters!")
         String password,
+        */
 
         @NotBlank(message = "Phone cannot be blank!")
         @Size(min = 10, message = "Enter a valid phone number!")

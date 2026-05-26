@@ -1,6 +1,6 @@
 package com.awp.auth.service;
 
-import com.awp.auth.exception.UserNotFoundException;
+import com.awp.auth.exception.userDomain.UserNotFoundException;
 import com.awp.auth.model.User;
 import com.awp.auth.model.UserPrincipal;
 import com.awp.auth.repository.UserRepository;
@@ -21,10 +21,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @NotNull
     @Override
-    public UserDetails loadUserByUsername(@NotNull String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NotNull String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
-        User appUser = userRepository.findUserByEmail(username).orElseThrow(() -> new UserNotFoundException("User not found!"));
-        log.info("User roles: {}", appUser.getRoles());
-        return new UserPrincipal(appUser);
+        UserPrincipal principal = new UserPrincipal(user);
+        log.info("User authenticated successfully. Active authorities: {}", principal.getAuthorities());
+
+        return principal;
     }
 }
