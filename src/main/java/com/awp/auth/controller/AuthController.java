@@ -1,5 +1,6 @@
 package com.awp.auth.controller;
 
+import com.awp.auth.dto.JWTAuthResponseDTO;
 import com.awp.auth.dto.LoginDTO;
 import com.awp.auth.dto.RegisterDTO;
 import com.awp.auth.service.UserAuthService;
@@ -25,8 +26,18 @@ public class AuthController {
 
     @PostMapping(value = {"/login", "/sign-in"})
     public ResponseEntity<String> login(@Valid @RequestBody LoginDTO loginDTO) {
-        String response = userAuthService.login(loginDTO);
-        return ResponseEntity.ok(response);
+        String success = userAuthService.login(loginDTO);
+        return ResponseEntity.ok(success);
+    }
+
+    @PostMapping(value = {"/login-token", "/sign-in-token"})
+    public ResponseEntity<JWTAuthResponseDTO> loginWithTokenResponse(@Valid @RequestBody LoginDTO loginDTO) {
+        String token = userAuthService.login(loginDTO);
+
+        JWTAuthResponseDTO jwtAuthResponse = new JWTAuthResponseDTO();
+        jwtAuthResponse.setAccessToken(token);
+
+        return ResponseEntity.ok(jwtAuthResponse);
     }
 
     @PostMapping(value = {"/register", "/sign-up"})
