@@ -1,13 +1,16 @@
 package com.awp.auth.service;
 
+import com.awp.auth.dto.AuthResponse;
 import com.awp.auth.dto.LoginDTO;
 import com.awp.auth.dto.RegisterDTO;
+import com.awp.auth.dto.UserSummaryDTO;
 import com.awp.auth.exception.EmailAlreadyExistsException;
 import com.awp.auth.exception.PhoneAlreadyExistsException;
 import com.awp.auth.jwt.JWTTokenProvider;
 import com.awp.auth.mapper.AuthUserMapper;
 import com.awp.auth.model.Role;
 import com.awp.auth.model.User;
+import com.awp.auth.model.UserPrincipal;
 import com.awp.auth.repository.RoleRepository;
 import com.awp.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +42,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final JWTTokenProvider jwtTokenProvider;
 
     @Override
-    public String login(LoginDTO loginDTO) {
+    public AuthResponse login(LoginDTO loginDTO) {
         log.info("Attempting authentication processing for login email: {}", loginDTO.email());
 
         Authentication authentication = authenticationManager.authenticate(
@@ -45,14 +52,33 @@ public class UserAuthServiceImpl implements UserAuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("Authentication manager verification successful. SecurityContext updated for email: {}", loginDTO.email());
 
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
-       // return jwtTokenProvider.generateToken(authentication);
+        String jwtToken = jwtTokenProvider.generateToken(authentication);
 
-        return "Logged-in Successfully";
+        Set<String> roles = principal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        UserSummaryDTO userSummary = UserSummaryDTO.builder()
+                .id(principal.getId())
+                .name(principal.getName())
+                .email(principal.getUsername())
+                .roles(roles).build();
+
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .tokenType("Bearer")
+                .timestamp(Instant.now())
+                .message("Authentication verification successful.")
+                .user(userSummary).build();
+
+        //return jwtTokenProvider.generateToken(authentication);
+
     }
 
     @Override
-    public String register(RegisterDTO registerDTO) {
+    public AuthResponse register(RegisterDTO registerDTO) {
         log.info("Processing account registration request for email: {}", registerDTO.email());
 
         if (userRepository.existsByEmail(registerDTO.email())) {
@@ -82,6 +108,15 @@ public class UserAuthServiceImpl implements UserAuthService {
         User savedUser = userRepository.save(user);
         log.info("User identity record persisted successfully. Assigned Generated ID: {} with role: USER", savedUser.getId());
 
-        return "Registered Successfully!";
+        UserSummaryDTO userSummary = UserSummaryDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
+
+        return AuthResponse.builder()
+                .timestamp(Instant.now())
+                .message("Registration successful! Please proceed to the login screen.")
+                .user(userSummary).build();
     }
 }

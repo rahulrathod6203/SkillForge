@@ -5,7 +5,7 @@ spring:
     banner-mode: off
   sql:
     init:
-      mode: never
+      mode: always
 
 
   # Database configuration (Brought out of application nesting)

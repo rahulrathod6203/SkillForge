@@ -1,12 +1,13 @@
 package com.awp.auth.service;
 
+import com.awp.auth.dto.AuthResponse;
 import com.awp.auth.dto.LoginDTO;
 import com.awp.auth.dto.RegisterDTO;
 
 public interface UserAuthService {
 
-    String login(LoginDTO loginDTO);
+    AuthResponse login(LoginDTO loginDTO);
 
-    String register(RegisterDTO registerDTO);
+    AuthResponse register(RegisterDTO registerDTO);
 
 }

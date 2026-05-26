@@ -3,6 +3,7 @@ package com.awp.auth.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,13 +22,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleGlobalException(Exception exception, WebRequest request) {
         log.error("CRITICAL ERROR: An unexpected system failure occurred at path {}: ",
                 request.getDescription(false).replace("uri=", ""), exception);
-        return buildResponse(request, "An internal server error occurred. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR, null);
+        return buildResponse(request, "An internal server error occurred. Please try again later!.", HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> handleUBadCredentialsException(BadCredentialsException exception, WebRequest request) {
         log.warn("Authentication rejected: Bad credentials provided.");
-        return buildResponse(request, "Invalid email or password structure.", HttpStatus.UNAUTHORIZED, null);
+        return buildResponse(request, "Invalid email or password!.", HttpStatus.UNAUTHORIZED, null);
     }
 
     @ExceptionHandler(UserNotFoundException.class)

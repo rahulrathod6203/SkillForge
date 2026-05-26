@@ -9,7 +9,6 @@ import java.util.Map;
 
 @Getter
 @Builder
-
 public class ErrorDetails {
 
     private Instant timeStamp;
