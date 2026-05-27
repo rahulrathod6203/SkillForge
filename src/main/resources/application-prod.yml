@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: AuraWellnessPlatform
+  main:
+    banner-mode: off
+  sql:
+    init:
+      mode: never          # Ensures any test schemas or data seed scripts run automatically
+
+  # Database configuration (MySQL for Test Environment)
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA Hibernate configuration
+  jpa:
+    show-sql: true          # Enabled so you can see the queries executing during your tests
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: validate      # Alternately, use 'create-drop' to wipe and recreate tables per test suite execution
+    properties:
+      hibernate:
+        format_sql: true    # Pretty-prints SQL queries in your test console logs
+
+# JWT
+app:
+  jwt-secret: ${JWT_SECRET}
+  jwt-expiration-milliseconds: ${JWT_EXPIRATION}
