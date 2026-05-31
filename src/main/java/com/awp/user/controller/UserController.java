@@ -2,7 +2,9 @@ package com.awp.user.controller;
 
 import com.awp.user.dto.UserRequestDTO;
 import com.awp.user.dto.UserResponseDTO;
+import com.awp.user.dto.UserResponsePage;
 import com.awp.user.service.UserService;
+import com.awp.user.util.AppConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,14 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<UserResponsePage> getAllUsers(
+            @RequestParam ( defaultValue = AppConstants.DEFAULT_PAGE_NO) int pageNo,
+            @RequestParam ( defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam ( defaultValue = AppConstants.DEFAULT_SORT_BY) String sortBy
+
+    ) {
+
+        return ResponseEntity.ok(userService.getAllUsers(pageNo,pageSize,sortBy));
     }
 
     @GetMapping("/{id}")
