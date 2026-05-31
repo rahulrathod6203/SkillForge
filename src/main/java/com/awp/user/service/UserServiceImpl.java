@@ -6,9 +6,14 @@ import com.awp.auth.model.User;
 import com.awp.auth.repository.UserRepository;
 import com.awp.user.dto.UserRequestDTO;
 import com.awp.user.dto.UserResponseDTO;
+import com.awp.user.dto.UserResponsePage;
 import com.awp.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +31,26 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UserResponseDTO> getAllUsers() {
+    public UserResponsePage getAllUsers(int pageNo, int pageSize, String sortBy) {
         log.info("Request received to fetch all users from the system.");
 
-        List<User> allUsers = userRepository.findAll();
+        Sort sorted = Sort.by(sortBy).ascending();
+
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sorted);
+
+        Page<User> userPage = userRepository.findAll(pageRequest);
+
+        List<UserResponseDTO> allUsers = userPage.getContent().stream().map(mapper::toResponse).toList();
+
         log.info("Successfully fetched {} user records from the database.", allUsers.size());
 
-        return allUsers.stream().map(mapper::toResponse).toList();
+        return UserResponsePage.builder()
+                .content(allUsers)
+                .pageNo(userPage.getNumber())
+                .pageSize(userPage.getSize())
+                .totalPages(userPage.getTotalPages())
+                .lastPage(userPage.isLast())
+                .build();
     }
 
     @Override
